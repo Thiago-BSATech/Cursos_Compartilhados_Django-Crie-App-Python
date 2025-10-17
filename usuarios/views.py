@@ -84,6 +84,6 @@ def cadastro(request):
 
 def logout(request):
 
-    auth.logout()
+    auth.logout(request)
     messages.success(request, 'Logout efetuado com sucesso!')
     return redirect('login')
