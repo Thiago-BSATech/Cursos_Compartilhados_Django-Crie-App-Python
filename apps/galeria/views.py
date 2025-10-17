@@ -79,10 +79,42 @@ def nova_imagem(request):
 
 
 
-def editar_imagem(request):
-    return render(request, 'galeria/editar_imagem.html')
+def editar_imagem(request, foto_id):
+
+    fotografia = Fotografia.objects.get(id=foto_id)
+    form = FotografiaForms(instance=fotografia)
+
+    if request.method == 'POST':
+        form = FotografiaForms(request.POST, request.FILES, instance=fotografia)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Fotografia Editada com sucesso!')
+            return redirect('index')
+
+   
+    return render(request, 'galeria/editar_imagem.html', { 'form': form, 'foto_id': foto_id })
 
 
 
-def deletar_imagem(request):
-    return render(request, 'galeria/deletar_imagem.html')
+def deletar_imagem(request, foto_id):
+
+    fotografia = Fotografia.objects.get(id=foto_id)
+
+    if fotografia == False:
+        return messages.error(request, 'Fotografia não encontrada!')
+
+    fotografia.delete()
+
+    messages.success(request, 'Fotografia Deletada!!')
+        
+
+    return redirect('index')
+
+
+def filtro(request, categoria):
+
+    fotografias = Fotografia.objects.order_by("data").filter(publicada=True, categoria = categoria)
+
+    return render(request, 'galeria/index.html',  { "cards": fotografias })
+  
